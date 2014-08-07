@@ -1,0 +1,82 @@
+package com.ias.webdesigner.designer.java.parser;
+
+import com.ias.webdesigner.designer.java.JavaClass;
+import com.ias.webdesigner.designer.tools.FileReader;
+
+public class JavaClassParser {
+
+	/**
+	 * http://docs.oracle.com/javase/tutorial/essential/regex/char_classes.html
+	 * . Any character (may or may not match line terminators)
+	 * 
+	 * [abc] a, b, or c (simple class)
+	 * 
+	 * [^abc] Any character except a, b, or c (negation)
+	 * 
+	 * [a-zA-Z] a through z, or A through Z, inclusive (range)
+	 * 
+	 * [a-d[m-p]] a through d, or m through p: [a-dm-p] (union)
+	 * 
+	 * [a-z&&[def]] d, e, or f (intersection)
+	 * 
+	 * [a-z&&[^bc]] a through z, except for b and c: [ad-z] (subtraction)
+	 * 
+	 * [a-z&&[^m-p]] a through z, and not m through p: [a-lq-z] (subtraction
+	 * 
+	 * \d A digit: [0-9]
+	 * 
+	 * \D A non-digit: [^0-9]
+	 * 
+	 * \s A whitespace character: [ \t\n\x0B\f\r]
+	 * 
+	 * \S A non-whitespace character: [^\s]
+	 * 
+	 * \w A word character: [a-zA-Z_0-9]
+	 * 
+	 * \W A non-word character: [^\w]
+	 * 
+	 * 
+	 * Greedy Reluctant Possessive Meaning
+	 * 
+	 * X? X?? X?+ X, once or not at all
+	 * 
+	 * X* X*? X*+ X, zero or more times
+	 * 
+	 * X+ X+? X++ X, one or more times
+	 * 
+	 * X{n} X{n}? X{n}+ X, exactly n times
+	 * 
+	 * X{n,} X{n,}? X{n,}+ X, at least n times
+	 * 
+	 * X{n,m} X{n,m}? X{n,m}+ X, at least n but not more than m times
+	 * 
+	 * . Any character (may or may not match line terminators) \d A digit: [0-9]
+	 * 
+	 * \D A non-digit: [^0-9]
+	 * 
+	 * \s A whitespace character: [ \t\n\x0B\f\r]
+	 * 
+	 * \S A non-whitespace character: [^\s]
+	 * 
+	 * \w A word character: [a-zA-Z_0-9]
+	 * 
+	 * \W A non-word character: [^\w]
+	 */
+
+	public static final String REGEX_PACKAGE_START = "\\s*package{1}\\s{1,}";
+
+	public static main(String args[]) {
+		JavaClassParser classParser = new JavaClassParser();
+	}
+
+	public JavaClassParser() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public JavaClass parse(String path) {
+		FileReader fileReader = new FileReader();
+
+		return null;
+	}
+
+}
