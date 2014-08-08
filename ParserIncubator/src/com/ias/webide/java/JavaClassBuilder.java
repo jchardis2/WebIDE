@@ -27,7 +27,7 @@ public class JavaClassBuilder {
 	private TypeDeclaration classType;// defines the modifiers
 
 	public JavaClassBuilder() {
-		ast = AST.newAST(AST.JLS3);
+		ast = AST.newAST(AST.JLS4);
 		unit = ast.newCompilationUnit();
 		classType = ast.newTypeDeclaration();
 		classType.setInterface(false);

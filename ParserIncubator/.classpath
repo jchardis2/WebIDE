@@ -16,5 +16,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/jchardis/Eclipse/EclipseForProjects/plugins/org.eclipse.jdt.core_3.9.1.v20130905-0837.jar" sourcepath="lib/org.eclipse.jdt.core.source_3.10.0.v20140604-1726.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

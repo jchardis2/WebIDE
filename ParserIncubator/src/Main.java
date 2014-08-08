@@ -25,12 +25,12 @@ public class Main {
 		builder.setClassName("JimmyRocks");
 		builder.addImport("com.AwesomeImport", false);
 		builder.addClassModifier(ModifierKeyword.PUBLIC_KEYWORD);
-		builder.buildMethod(methodName, modifierKeywords, returnType)
+//		builder.buildMethod(methodName, modifierKeywords, returnType)
 		System.out.println(builder.generateClass());
 	}
 
 	public void EclipseDemo() {
-		AST ast = AST.newAST(AST.JLS3);
+		AST ast = AST.newAST(AST.JLS4);
 		CompilationUnit unit = ast.newCompilationUnit();
 
 		PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
