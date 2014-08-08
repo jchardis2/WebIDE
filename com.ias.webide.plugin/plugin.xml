@@ -5,13 +5,23 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            name="Sample Category"
-            id="com.ias.webide.plugin.commands.category">
+            name="WebIDE Category"
+            id="com.ias.webide.plugin.commands.webIDECategory">
       </category>
       <command
             name="Create Project"
-            categoryId="com.ias.webide.plugin.commands.category"
+            categoryId="com.ias.webide.plugin.commands.webIDECategory"
             id="com.ias.webide.plugin.commands.createProjectCommand">
+      </command>
+      <command
+            categoryId="com.ias.webide.plugin.commands.webIDECategory"
+            id="com.ias.webide.plugin.commands.startServer"
+            name="Start Server">
+      </command>
+      <command
+            categoryId="com.ias.webide.plugin.commands.webIDECategory"
+            id="com.ias.webide.plugin.commands.stopServerCommand"
+            name="Stop Server">
       </command>
    </extension>
    <extension
@@ -19,6 +29,14 @@
       <handler
             commandId="com.ias.webide.plugin.commands.createProjectCommand"
             class="com.ias.webide.plugin.handlers.WebIDEHandler">
+      </handler>
+      <handler
+            class="com.ias.webide.plugin.handlers.WebIDEServerHandler"
+            commandId="com.ias.webide.plugin.commands.startServer">
+      </handler>
+      <handler
+            class="com.ias.webide.plugin.handlers.StopServerHandler"
+            commandId="com.ias.webide.plugin.commands.stopServerCommand">
       </handler>
    </extension>
    <extension
@@ -28,6 +46,18 @@
             contextId="org.eclipse.ui.contexts.window"
             sequence="M1+6"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+      <key
+            commandId="com.ias.webide.plugin.commands.startServer"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+      <key
+            commandId="com.ias.webide.plugin.commands.stopServerCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
       </key>
    </extension>
    <extension
@@ -54,6 +84,56 @@
                   icon="icons/sample.gif"
                   tooltip="Say hello world"
                   id="com.ias.webide.plugin.toolbars.sampleCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="com.ias.webide.plugin.menus.sampleMenu"
+               label="Sample Menu"
+               mnemonic="M">
+            <command
+                  commandId="com.ias.webide.plugin.commands.startServer"
+                  id="com.ias.webide.plugin.menus.sampleCommand"
+                  mnemonic="S">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="com.ias.webide.plugin.toolbars.sampleToolbar">
+            <command
+                  commandId="com.ias.webide.plugin.commands.startServer"
+                  icon="icons/sample.gif"
+                  id="com.ias.webide.plugin.toolbars.sampleCommand"
+                  tooltip="Say hello world">
+            </command>
+         </toolbar>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="com.ias.webide.plugin.menus.sampleMenu"
+               label="Sample Menu"
+               mnemonic="M">
+            <command
+                  commandId="com.ias.webide.plugin.commands.stopServerCommand"
+                  id="com.ias.webide.plugin.menus.sampleCommand"
+                  mnemonic="S">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="com.ias.webide.plugin.toolbars.sampleToolbar">
+            <command
+                  commandId="com.ias.webide.plugin.commands.stopServerCommand"
+                  icon="icons/sample.gif"
+                  id="com.ias.webide.plugin.toolbars.sampleCommand"
+                  tooltip="Say hello world">
             </command>
          </toolbar>
       </menuContribution>

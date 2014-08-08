@@ -48,7 +48,7 @@ public class IASServer {
 
 	public static void main(String[] args) throws Exception {
 		IASServer iasServer = new IASServer();
-		iasServer.loadSystemProperties();
+		iasServer.loadSystemProperties("config.properties");
 		ContextHandlerCollection contexts = iasServer.configure();
 		iasServer.fullWebAppDeployment(contexts);
 		// iasServer.setLoginService(contexts);
@@ -193,11 +193,19 @@ public class IASServer {
 		server.join();
 	}
 
-	public void loadSystemProperties() throws IOException {
-		ConfigPropertiesUtil configPropertiesUtil = new ConfigPropertiesUtil();
-		configPropertiesUtil.resolveProperties(new File("config.properties"));
+	public boolean isRunning() {
+		return server.isRunning();
+	}
 
-		FileInputStream propFile = new FileInputStream("config.properties");
+	public void stop() throws Exception {
+		server.stop();
+	}
+
+	public void loadSystemProperties(String path) throws IOException {
+		ConfigPropertiesUtil configPropertiesUtil = new ConfigPropertiesUtil();
+		configPropertiesUtil.resolveProperties(new File(path));
+
+		FileInputStream propFile = new FileInputStream(path);
 		Properties p = new Properties(System.getProperties());
 		p.load(propFile);
 		System.setProperties(p);
@@ -231,6 +239,10 @@ public class IASServer {
 
 	public void setServer(Server server) {
 		this.server = server;
+	}
+
+	public long getStopTimeout() {
+		return server.getStopTimeout();
 	}
 
 }
