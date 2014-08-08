@@ -15,6 +15,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.osgi.framework.Bundle;
 
 import com.ias.webide.jetty.IASServer;
+import com.mysql.jdbc.log.LogFactory;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
