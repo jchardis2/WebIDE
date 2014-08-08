@@ -160,7 +160,7 @@ public class IASServer {
 
 	public void fullWebAppDeployment(ContextHandlerCollection contexts) {
 		addDeployer(webbapp_home, contexts);
-		addDeployer("/home/jchardis/git/IAS-WebDesigner/", contexts);
+//		addDeployer("/home/jchardis/git/IAS-WebDesigner/", contexts);
 	}
 
 	public void addDeployer(String directory, ContextHandlerCollection contexts) {
