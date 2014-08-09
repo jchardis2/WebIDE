@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.PropertiesConfigurationManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
@@ -39,14 +42,20 @@ public class IASServer {
 	/*
 	 * Testing
 	 */
-	SecurityHandler constraintSecurityHandler;
+	private SecurityHandler constraintSecurityHandler;
 
-	private static String jetty_home;
-	private static String webbapp_home;
+	private String jetty_home;
+	private String webbapp_home;
 
 	private Server server;
 
+	private HttpConfiguration http_config;
+
 	public static void main(String[] args) throws Exception {
+		pluginStart();
+	}
+
+	public static void mainStart() throws Exception {
 		IASServer iasServer = new IASServer();
 		iasServer.loadSystemProperties("config.properties");
 		ContextHandlerCollection contexts = iasServer.configure();
@@ -56,22 +65,37 @@ public class IASServer {
 		iasServer.join();
 	}
 
+	public static void pluginStart() throws Exception {
+		IASServer iasServer = new IASServer();
+		iasServer.loadSystemProperties("config.properties");
+		iasServer.configureHttp();
+		iasServer.configureHttps();
+		// ContextHandlerCollection contexts = iasServer.configure();
+		// iasServer.fullWebAppDeployment(contexts);
+
+		// find project
+		String projectPath = "/home/jchardis/git/WebIDE/WebIDE";
+		iasServer.addWebApp(projectPath + File.separator + "WebContent", "/WebIDE");
+		// iasServer.addWebApp(projectPath);
+		iasServer.start();
+	}
+
 	public IASServer() {
 		QueuedThreadPool threadPool = new QueuedThreadPool();
 		threadPool.setMaxThreads(500);
 		server = new Server(threadPool);
 	}
 
+	// public IASServer(String jetty_home, String webbapp_home) {
+	// QueuedThreadPool threadPool = new QueuedThreadPool();
+	// threadPool.setMaxThreads(500);
+	// server = new Server(threadPool);
+	// this.jetty_home = jetty_home;
+	// this.webbapp_home = webbapp_home;
+	// }
+
 	public ContextHandlerCollection configure() throws IOException {
 		server.addBean(new ScheduledExecutorScheduler());
-		HttpConfiguration http_config = new HttpConfiguration();
-		http_config.setSecureScheme("https");
-		http_config.setSecurePort(8443);
-		http_config.setOutputBufferSize(32768);
-		http_config.setRequestHeaderSize(8192);
-		http_config.setResponseHeaderSize(8192);
-		http_config.setSendServerVersion(true);
-		http_config.setSendDateHeader(false);
 		HandlerCollection handlers = new HandlerCollection();
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		handlers.setHandlers(new Handler[] { contexts, new DefaultHandler() });
@@ -79,35 +103,11 @@ public class IASServer {
 		server.setDumpAfterStart(false);
 		server.setDumpBeforeStop(false);
 		server.setStopAtShutdown(true);
-		MBeanContainer mbContainer = new MBeanContainer(
-				ManagementFactory.getPlatformMBeanServer());
+		MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
 		server.addBean(mbContainer);
-		ServerConnector http = new ServerConnector(server,
-				new HttpConnectionFactory(http_config));
-		http.setPort(8080);
-		http.setIdleTimeout(30000);
-		server.addConnector(http);
-		SslContextFactory sslContextFactory = new SslContextFactory();
-		sslContextFactory.setKeyStorePath(jetty_home + "/etc/keystore");
-		sslContextFactory
-				.setKeyStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
-		sslContextFactory.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
-		sslContextFactory.setTrustStorePath(jetty_home + "/etc/keystore");
-		sslContextFactory
-				.setTrustStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
-		sslContextFactory.setExcludeCipherSuites("SSL_RSA_WITH_DES_CBC_SHA",
-				"SSL_DHE_RSA_WITH_DES_CBC_SHA", "SSL_DHE_DSS_WITH_DES_CBC_SHA",
-				"SSL_RSA_EXPORT_WITH_RC4_40_MD5",
-				"SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
-				"SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
-				"SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
-		HttpConfiguration https_config = new HttpConfiguration(http_config);
-		https_config.addCustomizer(new SecureRequestCustomizer());
-		ServerConnector sslConnector = new ServerConnector(server,
-				new SslConnectionFactory(sslContextFactory, "http/1.1"),
-				new HttpConnectionFactory(https_config));
-		sslConnector.setPort(8443);
-		server.addConnector(sslConnector);
+
+		configureHttp();
+		configureHttps();
 
 		StatisticsHandler stats = new StatisticsHandler();
 		stats.setHandler(server.getHandler());
@@ -135,6 +135,63 @@ public class IASServer {
 
 	}
 
+	public void configureHttp() {
+		http_config = new HttpConfiguration();
+		http_config.setSecureScheme("https");
+		http_config.setSecurePort(8443);
+		http_config.setOutputBufferSize(32768);
+		http_config.setRequestHeaderSize(8192);
+		http_config.setResponseHeaderSize(8192);
+		http_config.setSendServerVersion(true);
+		http_config.setSendDateHeader(false);
+
+		ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(http_config));
+		http.setPort(8080);
+		http.setIdleTimeout(30000);
+		server.addConnector(http);
+	}
+
+	public void configureHttps() {
+		SslContextFactory sslContextFactory = new SslContextFactory();
+		sslContextFactory.setKeyStorePath(jetty_home + "/etc/keystore");
+		sslContextFactory.setKeyStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+		sslContextFactory.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
+		sslContextFactory.setTrustStorePath(jetty_home + "/etc/keystore");
+		sslContextFactory.setTrustStorePassword("OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4");
+		sslContextFactory.setExcludeCipherSuites("SSL_RSA_WITH_DES_CBC_SHA", "SSL_DHE_RSA_WITH_DES_CBC_SHA", "SSL_DHE_DSS_WITH_DES_CBC_SHA", "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
+				"SSL_RSA_EXPORT_WITH_DES40_CBC_SHA", "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA", "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
+
+		HttpConfiguration https_config = new HttpConfiguration(http_config);
+		https_config.addCustomizer(new SecureRequestCustomizer());
+		ServerConnector sslConnector = new ServerConnector(server, new SslConnectionFactory(sslContextFactory, "http/1.1"), new HttpConnectionFactory(https_config));
+		sslConnector.setPort(8443);
+		server.addConnector(sslConnector);
+	}
+
+	public void addWebApp(String warPath, String contextPath) {
+		// Setup JMX
+		MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+		server.addBean(mbContainer);
+
+		// The WebAppContext is the entity that controls the environment in
+		// which a web application lives and
+		// breathes. In this example the context path is being set to "/" so it
+		// is suitable for serving root context
+		// requests and then we see it setting the location of the war. A whole
+		// host of other configurations are
+		// available, ranging from configuring to support annotation scanning in
+		// the webapp (through
+		// PlusConfiguration) to choosing where the webapp will unpack itself.
+		WebAppContext webapp = new WebAppContext();
+		webapp.setContextPath(contextPath);
+		webapp.setWar(warPath);
+
+		// A WebAppContext is a ContextHandler as well so it needs to be set to
+		// the server so it is aware of where to
+		// send the appropriate requests.
+		server.setHandler(webapp);
+	}
+
 	// public void addWebApps(ContextHandlerCollection contexts) {
 	// // WebAppContext wdWebapp = new WebAppContext();
 	// // wdWebapp.setContextPath("/webdesigner");
@@ -160,23 +217,20 @@ public class IASServer {
 
 	public void fullWebAppDeployment(ContextHandlerCollection contexts) {
 		addDeployer(webbapp_home, contexts);
-//		addDeployer("/home/jchardis/git/IAS-WebDesigner/", contexts);
+		// addDeployer("/home/jchardis/git/IAS-WebDesigner/", contexts);
 	}
 
 	public void addDeployer(String directory, ContextHandlerCollection contexts) {
 		DeploymentManager deployer = new DeploymentManager();
 		deployer.setContexts(contexts);
-		deployer.setContextAttribute(
-				"org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
-				".*/servlet-api-[^/]*\\.jar$");
+		deployer.setContextAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/servlet-api-[^/]*\\.jar$");
 		WebAppProvider webapp_provider = new WebAppProvider();
 		webapp_provider.setMonitoredDirName(directory);
 		// webapp_provider.setDefaultsDescriptor(jetty_home
 		// + "/etc/webdefault.xml");
 		webapp_provider.setScanInterval(100);
 		webapp_provider.setExtractWars(false);
-		webapp_provider
-				.setConfigurationManager(new PropertiesConfigurationManager());
+		webapp_provider.setConfigurationManager(new PropertiesConfigurationManager());
 		deployer.addAppProvider(webapp_provider);
 		server.addBean(deployer);
 	}
@@ -210,27 +264,25 @@ public class IASServer {
 		p.load(propFile);
 		System.setProperties(p);
 		jetty_home = System.getProperty("jetty.home", null);
-
 		webbapp_home = System.getProperty("webapp.home", null);
 		System.out.println("WebAppHome: " + webbapp_home);
 		System.out.println("JettyHome: " + jetty_home);
-
 	}
 
-	public static String getJetty_home() {
+	public String getJetty_home() {
 		return jetty_home;
 	}
 
-	public static void setJetty_home(String jetty_home) {
-		IASServer.jetty_home = jetty_home;
+	public void setJetty_home(String jetty_home) {
+		this.jetty_home = jetty_home;
 	}
 
-	public static String getWebbapp_home() {
+	public String getWebbapp_home() {
 		return webbapp_home;
 	}
 
-	public static void setWebbapp_home(String webbapp_home) {
-		IASServer.webbapp_home = webbapp_home;
+	public void setWebbapp_home(String webbapp_home) {
+		this.webbapp_home = webbapp_home;
 	}
 
 	public Server getServer() {

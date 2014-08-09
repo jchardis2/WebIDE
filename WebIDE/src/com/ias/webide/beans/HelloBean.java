@@ -4,8 +4,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.io.Serializable;
 
-@ManagedBean
-@SessionScoped 
+@ManagedBean(name = "helloBean")
+@SessionScoped
 public class HelloBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;

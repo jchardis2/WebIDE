@@ -3,19 +3,21 @@ package com.ias.webide.plugin.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
-import org.apache.jasper.compiler.JspRuntimeContext;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.osgi.framework.Bundle;
 
 import com.ias.webide.jetty.IASServer;
-import com.mysql.jdbc.log.LogFactory;
+import com.ias.webide.plugin.tools.PluginFileResolver;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -38,16 +40,23 @@ public class WebIDEServerHandler extends AbstractHandler {
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (iasServer == null || !iasServer.isRunning()) {
-			Bundle bundle = Platform.getBundle("com.ias.webide.plugin");
-			URL fileURL = bundle.getEntry("config.properties");
-			File file = null;
+			PluginFileResolver fileResolver = new PluginFileResolver();
 			try {
-				file = new File(FileLocator.resolve(fileURL).toURI());
 				iasServer = new IASServer();
-				iasServer.loadSystemProperties(file.getAbsolutePath());
-				ContextHandlerCollection contexts = iasServer.configure();
-				iasServer.fullWebAppDeployment(contexts);
-				// iasServer.setLoginService(contexts);
+				iasServer.loadSystemProperties(fileResolver.getAbsolutePath("config.properties"));
+				iasServer.setJetty_home(fileResolver.getAbsolutePath("jetty"));
+				iasServer.setWebbapp_home(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getAbsolutePath() + File.separator + "webapps");
+				iasServer.configureHttp();
+				iasServer.configureHttps();
+				// ContextHandlerCollection contexts = iasServer.configure();
+				// iasServer.fullWebAppDeployment(contexts);
+
+				// find project
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				IProject project = root.getProject("WebIDE");
+				String projectPath = project.getRawLocation().toString();
+				iasServer.addWebApp(projectPath + File.separator + "WebContent", "/WebIDE");
+				// iasServer.addWebApp(projectPath);
 				iasServer.start();
 				// iasServer.join();
 			} catch (InterruptedException e) {
@@ -62,7 +71,7 @@ public class WebIDEServerHandler extends AbstractHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else{
+		} else {
 			System.out.println("Server is already running.");
 		}
 		return null;
