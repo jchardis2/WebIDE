@@ -7,7 +7,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.ias.webide.plugin.tools.PluginPropertiesTool;
+import com.ias.webide.plugin.util.PluginFileResolver;
+import com.ias.webide.plugin.util.PluginPropertiesUtil;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -31,9 +32,12 @@ public class Activator extends AbstractUIPlugin {
 	 * Does everything you need to do when this start up
 	 */
 	public void init() {
-		PluginPropertiesTool.addProperties();
+		PluginPropertiesUtil.addProperties();
 		try {
-			PluginPropertiesTool.loadSystemProperties("maven.config.properties");
+			PluginPropertiesUtil.loadSystemProperties("maven.config.properties");
+			PluginFileResolver fileResolver = new PluginFileResolver();
+			String mavenHome = fileResolver.getAbsolutePath("apache-maven");
+			System.setProperty("maven.home", mavenHome);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

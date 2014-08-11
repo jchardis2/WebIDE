@@ -1,4 +1,4 @@
-package com.ias.webide.plugin.tools;
+package com.ias.webide.plugin.util;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;

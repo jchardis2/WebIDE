@@ -1,4 +1,4 @@
-package com.ias.webide.plugin.tools;
+package com.ias.webide.plugin.util;
 
 import java.io.File;
 import java.io.IOException;

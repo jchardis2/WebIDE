@@ -6,14 +6,16 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
+import javax.naming.NamingException;
+
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.PropertiesConfigurationManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.SecurityHandler;
@@ -77,7 +79,12 @@ public class IASServer {
 		String projectPath = "/home/jchardis/git/WebIDE/WebIDE";
 		iasServer.addWebApp(projectPath + File.separator + "WebContent", "/WebIDE");
 		// iasServer.addWebApp(projectPath);
+
 		iasServer.start();
+	}
+
+	public void helper() {
+
 	}
 
 	public IASServer() {
@@ -183,6 +190,21 @@ public class IASServer {
 		// the webapp (through
 		// PlusConfiguration) to choosing where the webapp will unpack itself.
 		WebAppContext webapp = new WebAppContext();
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		try {
+
+			org.eclipse.jetty.plus.jndi.EnvEntry wiggle = new org.eclipse.jetty.plus.jndi.EnvEntry(webapp, "workspace", workspace, true);
+			org.eclipse.jetty.plus.jndi.Resource xxxmail = new org.eclipse.jetty.plus.jndi.Resource(webapp, "workspace", workspace);
+
+			System.out.println(wiggle);
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		webapp.setAttribute("workspace", workspace);
+
 		webapp.setContextPath(contextPath);
 		webapp.setWar(warPath);
 

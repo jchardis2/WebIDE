@@ -1,4 +1,4 @@
-package com.ias.webide.plugin.tools;
+package com.ias.webide.plugin.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -143,8 +143,7 @@ public class XMLDomBuilder {
 		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 		DOMSource source = new DOMSource(doc);
-		System.out.println("File: ");
-		StreamResult result = new StreamResult(System.out);
+		StreamResult result = new StreamResult(xmlFile);
 		transformer.transform(source, result);
 	}
 }

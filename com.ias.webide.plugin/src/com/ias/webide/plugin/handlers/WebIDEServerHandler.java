@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
 import com.ias.webide.jetty.IASServer;
-import com.ias.webide.plugin.tools.PluginFileResolver;
+import com.ias.webide.plugin.util.PluginFileResolver;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.

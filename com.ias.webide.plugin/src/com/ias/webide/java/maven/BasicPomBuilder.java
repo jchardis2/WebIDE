@@ -11,7 +11,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Element;
 
-import com.ias.webide.plugin.tools.XMLDomBuilder;
+import com.ias.webide.plugin.util.XMLDomBuilder;
 
 /**
  * Builds a maven pom
@@ -22,7 +22,7 @@ import com.ias.webide.plugin.tools.XMLDomBuilder;
  *
  */
 public class BasicPomBuilder {
-	private XMLDomBuilder xmlDomBuilder;
+	protected XMLDomBuilder xmlDomBuilder;
 	private Element rootElement;
 	private Element buildElement;
 	private Element plugins;
@@ -35,8 +35,8 @@ public class BasicPomBuilder {
 		Properties p = new Properties(System.getProperties());
 		p.load(propFile);
 		System.setProperties(p);
+		Properties sp = System.getProperties();
 		try {
-			Properties sp = System.getProperties();
 			BasicPomBuilder basicPomBuilder = new BasicPomBuilder(new File("test.pom.xml"));
 			XMLDomBuilder xmlDomBuilder = basicPomBuilder.getXmlDomBuilder();
 			basicPomBuilder.appendRootElement();
