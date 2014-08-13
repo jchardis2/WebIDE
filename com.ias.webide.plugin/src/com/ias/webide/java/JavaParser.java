@@ -33,8 +33,7 @@ public class JavaParser {
 
 	public void init(String classContent, boolean resolveBindings) {
 
-		ASTParser astParser = ASTParser.newParser(AST.JLS4);
-
+		ASTParser astParser = ASTParser.newParser(AST.JLS8);
 		astParser.setSource(classContent.toCharArray());
 		astParser.setKind(ASTParser.K_COMPILATION_UNIT);
 		unit = (CompilationUnit) astParser.createAST(null);

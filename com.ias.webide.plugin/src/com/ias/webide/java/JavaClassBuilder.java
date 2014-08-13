@@ -3,7 +3,7 @@ package com.ias.webide.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -24,14 +24,27 @@ import com.ias.webide.java.tools.ParameterNameValuePair;
 
 public class JavaClassBuilder {
 	private AST ast;
-	private CompilationUnit unit;
+	private CompilationUnit compilationUnit;
 	private TypeDeclaration classType;// defines the modifiers
 
 	public JavaClassBuilder() {
 		ast = AST.newAST(AST.JLS8);
-		unit = ast.newCompilationUnit();
+		compilationUnit = ast.newCompilationUnit();
 		classType = ast.newTypeDeclaration();
 		classType.setInterface(false);
+	}
+
+	public void buildSimpleJavaClass(String packageName, String className) {
+		setPackage(packageName);
+		setClassName(className);
+		addClassModifier(ModifierKeyword.PUBLIC_KEYWORD);
+	}
+
+	public void buildSimpleJavaClass(String packageName, String className, String[] imports) {
+		for (String classImport : imports) {
+
+			addImport(classImport, false);
+		}
 	}
 
 	public void setPackage(String packageName) {
@@ -42,13 +55,12 @@ public class JavaClassBuilder {
 		} else {
 			name = ast.newSimpleName(packageArray[0]);
 			for (int i = 1; i < packageArray.length; i++) {
-				name = ast.newQualifiedName(name,
-						ast.newSimpleName(packageArray[i]));
+				name = ast.newQualifiedName(name, ast.newSimpleName(packageArray[i]));
 			}
 		}
 		PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
 		packageDeclaration.setName(name);
-		unit.setPackage(packageDeclaration);
+		((CompilationUnit) compilationUnit).setPackage(packageDeclaration);
 	}
 
 	/**
@@ -69,14 +81,13 @@ public class JavaClassBuilder {
 		} else {
 			name = ast.newSimpleName(packageArray[0]);
 			for (int i = 1; i < packageArray.length; i++) {
-				name = ast.newQualifiedName(name,
-						ast.newSimpleName(packageArray[i]));
+				name = ast.newQualifiedName(name, ast.newSimpleName(packageArray[i]));
 			}
 		}
 		// ast.newSimpleName("java"),ast.newSimpleName("util"));
 		importDeclaration.setName(name);
 		importDeclaration.setOnDemand(onDemand);
-		return unit.imports().add(importDeclaration);
+		return compilationUnit.imports().add(importDeclaration);
 	}
 
 	public void setIsInterface(boolean isInterface) {
@@ -126,8 +137,7 @@ public class JavaClassBuilder {
 	 *            ast.newPrimitiveType(PrimitiveType.VOID));
 	 * @return the method that was created
 	 */
-	public MethodDeclaration buildMethod(String methodName,
-			ArrayList<ModifierKeyword> modifierKeywords, Type returnType) {
+	public MethodDeclaration buildMethod(String methodName, ArrayList<ModifierKeyword> modifierKeywords, Type returnType) {
 		MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
 		methodDeclaration.setConstructor(false);
 		methodDeclaration.setName(ast.newSimpleName(methodName));
@@ -152,19 +162,14 @@ public class JavaClassBuilder {
 	 *            the list of types and names of the parameters to add
 	 * @return the method that was created
 	 */
-	public MethodDeclaration buildMethod(String methodName,
-			ArrayList<ModifierKeyword> modifierKeywords, Type returnType,
-			List<ParameterNameValuePair> parameterNVPList) {
-		MethodDeclaration methodDeclaration = buildMethod(methodName,
-				modifierKeywords, returnType);
+	public MethodDeclaration buildMethod(String methodName, ArrayList<ModifierKeyword> modifierKeywords, Type returnType, List<ParameterNameValuePair> parameterNVPList) {
+		MethodDeclaration methodDeclaration = buildMethod(methodName, modifierKeywords, returnType);
 
 		// set the variables
 		for (ParameterNameValuePair parameterNVP : parameterNVPList) {
-			SingleVariableDeclaration variableDeclaration = ast
-					.newSingleVariableDeclaration();
+			SingleVariableDeclaration variableDeclaration = ast.newSingleVariableDeclaration();
 			variableDeclaration.setType(parameterNVP.getType());
-			variableDeclaration.setName(ast.newSimpleName(parameterNVP
-					.getName()));
+			variableDeclaration.setName(ast.newSimpleName(parameterNVP.getName()));
 			methodDeclaration.parameters().add(variableDeclaration);
 		}
 		return methodDeclaration;
@@ -174,8 +179,7 @@ public class JavaClassBuilder {
 	public void addMethodBlock(MethodDeclaration methodDeclaration) {
 		org.eclipse.jdt.core.dom.Block block = ast.newBlock();
 		MethodInvocation methodInvocation = ast.newMethodInvocation();
-		QualifiedName name = ast.newQualifiedName(ast.newSimpleName("System"),
-				ast.newSimpleName("out"));
+		QualifiedName name = ast.newQualifiedName(ast.newSimpleName("System"), ast.newSimpleName("out"));
 		methodInvocation.setExpression(name);
 		methodInvocation.setName(ast.newSimpleName("println"));
 		InfixExpression infixExpression = ast.newInfixExpression();
@@ -187,8 +191,7 @@ public class JavaClassBuilder {
 		literal.setLiteralValue(" world");
 		infixExpression.setRightOperand(literal);
 		methodInvocation.arguments().add(infixExpression);
-		ExpressionStatement expressionStatement = ast
-				.newExpressionStatement(methodInvocation);
+		ExpressionStatement expressionStatement = ast.newExpressionStatement(methodInvocation);
 		block.statements().add(expressionStatement);
 		methodDeclaration.setBody(block);
 	}
@@ -198,8 +201,8 @@ public class JavaClassBuilder {
 	}
 
 	public String generateClass() {
-		unit.types().add(classType);
-		return unit.toString();
+		compilationUnit.types().add(classType);
+		return compilationUnit.toString();
 	}
 
 	public AST getAst() {
@@ -210,12 +213,12 @@ public class JavaClassBuilder {
 		this.ast = ast;
 	}
 
-	public CompilationUnit getUnit() {
-		return unit;
+	public CompilationUnit getCompilationUnit() {
+		return compilationUnit;
 	}
 
-	public void setUnit(CompilationUnit unit) {
-		this.unit = unit;
+	public void setCompilationUnit(CompilationUnit unit) {
+		this.compilationUnit = unit;
 	}
 
 	public TypeDeclaration getClassType() {

@@ -10,12 +10,12 @@ import javax.naming.NamingException;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.PropertiesConfigurationManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.SecurityHandler;
@@ -38,7 +38,10 @@ import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
+import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import com.ias.webide.plugin.tools.PluginFileResolver;
 
 public class IASServer {
 	/*
@@ -175,7 +178,7 @@ public class IASServer {
 		server.addConnector(sslConnector);
 	}
 
-	public void addWebApp(String warPath, String contextPath) {
+	public void addWebApp(String warPath, String contextPath) throws IOException {
 		// Setup JMX
 		MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
 		server.addBean(mbContainer);
@@ -190,20 +193,6 @@ public class IASServer {
 		// the webapp (through
 		// PlusConfiguration) to choosing where the webapp will unpack itself.
 		WebAppContext webapp = new WebAppContext();
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		try {
-
-			org.eclipse.jetty.plus.jndi.EnvEntry wiggle = new org.eclipse.jetty.plus.jndi.EnvEntry(webapp, "workspace", workspace, true);
-			org.eclipse.jetty.plus.jndi.Resource xxxmail = new org.eclipse.jetty.plus.jndi.Resource(webapp, "workspace", workspace);
-
-			System.out.println(wiggle);
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		webapp.setAttribute("workspace", workspace);
 
 		webapp.setContextPath(contextPath);
 		webapp.setWar(warPath);

@@ -2,6 +2,7 @@ package com.ias.webide.plugin.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,23 +23,26 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
-import org.eclipse.swt.widgets.Display;
 
 import com.ias.webide.java.JavaProjectBuilder;
+import com.ias.webide.java.db.mysql.util.JavaClassGenerator;
 import com.ias.webide.java.maven.MavenJavaProjectBuilder;
 import com.ias.webide.java.maven.WarPomBuilder;
 import com.ias.webide.plugin.util.ProjectResolver;
 import com.ias.webide.plugin.util.ProjectUtil;
+import com.infinityappsolutions.webdesigner.tools.database.DAOReader;
+import com.infinityappsolutions.webdesigner.tools.database.DAOReader.DatabaseTable;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -60,24 +64,62 @@ public class WebIDEHandler extends AbstractHandler {
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+
+		DAOReader daoReader = new DAOReader();
+		daoReader.setConnection();
 		try {
-			buildMavenProject("Test" + count++);
-		} catch (IOException e) {
+			ArrayList<DatabaseTable> databaseTable = daoReader.getDatabaseTables();
+			ProjectResolver projectResolver = ProjectResolver.getInstance();
+			IJavaProject iJavaProject = projectResolver.getInstance().resolveProject("Test");
+			iJavaProject.open(new NullProgressMonitor());
+			IPackageFragmentRoot[] iPackageFragmentRoots = iJavaProject.getPackageFragmentRoots();
+			IPackageFragment iPackageFragment = null;
+			for (IPackageFragmentRoot iPackageFragmentRoot : iPackageFragmentRoots) {
+				if (iPackageFragmentRoot.getElementName().equals("src")) {
+					iPackageFragment = iPackageFragmentRoot.getPackageFragment("com.ias.test.beans");
+				}
+			}
+			iPackageFragment.open(new NullProgressMonitor());
+			// iPackageFragment.open(new NullProgressMonitor());
+			System.out.println("Name: " + iPackageFragment.getElementName());
+			JavaClassGenerator classGenerator = new JavaClassGenerator(iJavaProject, iPackageFragment);
+			classGenerator.createClass(databaseTable.get(0), "com.ias.test.beans", "TestClass", false, false, true);
+			CompilationUnit cu = classGenerator.getCu();
+			IJavaElement classPath = cu.getJavaElement();
+			System.out.println(classPath);
+			ICompilationUnit icu = iPackageFragment.createCompilationUnit("TestClass.java", cu.toString(), true, new NullProgressMonitor());
+			ProjectUtil projectUtil = new ProjectUtil();
+			projectUtil.refreshProject(iJavaProject.getResource());
+			System.out.println("Done building java project");
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
+		} catch (JavaModelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MavenInvocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
+		// try {
+		// buildMavenProject("Test" + count++);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (ParserConfigurationException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (CoreException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (TransformerException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (MavenInvocationException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		return null;
 	}
 
@@ -99,7 +141,7 @@ public class WebIDEHandler extends AbstractHandler {
 		String folder = workspace.getRoot().getLocation().toFile().getPath().toString();
 		String pomPath = folder + File.separator + mavenJProject.getElementName() + File.separator + "pom.xml";
 
-		ProjectResolver projectResolver = new ProjectResolver();
+		ProjectResolver projectResolver = ProjectResolver.getInstance();
 		File xmlFile = new File(pomPath);
 		if (!xmlFile.exists()) {
 			xmlFile.createNewFile();

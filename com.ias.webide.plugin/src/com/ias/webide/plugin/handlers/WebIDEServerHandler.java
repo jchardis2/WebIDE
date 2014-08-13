@@ -50,12 +50,14 @@ public class WebIDEServerHandler extends AbstractHandler {
 				iasServer.configureHttps();
 				// ContextHandlerCollection contexts = iasServer.configure();
 				// iasServer.fullWebAppDeployment(contexts);
-
+				String webContentPath = fileResolver.getAbsolutePath("WebContent");
 				// find project
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				IProject project = root.getProject("WebIDE");
-				String projectPath = project.getRawLocation().toString();
-				iasServer.addWebApp(projectPath + File.separator + "WebContent", "/WebIDE");
+				// IWorkspaceRoot root =
+				// ResourcesPlugin.getWorkspace().getRoot();
+				// IProject project = root.getProject("WebIDE");
+				// String webContentPath = project.getRawLocation().toString() +
+				// File.seperator + "WebContent";
+				iasServer.addWebApp(webContentPath, "/WebIDE");
 				// iasServer.addWebApp(projectPath);
 				iasServer.start();
 				// iasServer.join();

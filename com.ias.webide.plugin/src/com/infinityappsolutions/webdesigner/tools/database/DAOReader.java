@@ -28,7 +28,7 @@ public class DAOReader {
 			Class.forName("com.mysql.jdbc.Driver");
 
 			// System.out.println("MySQL JDBC Driver Registered!");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/webdesigner", "root", "mytestpassword");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/webdesigner", "ias", "mytestpassword");
 		} catch (ClassNotFoundException e) {
 			System.out.println("Where is your MySQL JDBC Driver?");
 			e.printStackTrace();
