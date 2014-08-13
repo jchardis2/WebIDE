@@ -1,8 +1,10 @@
 package com.ias.webide.java;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -23,10 +25,20 @@ public class JavaBlockBuilder {
 		block = ast.newBlock();
 	}
 
+	public Assignment buildAssignmentExpression(Expression lhs, Assignment.Operator operator, Expression rhs) {
+		Assignment assignmentExpression = ast.newAssignment();
+		assignmentExpression.setLeftHandSide(lhs);
+		assignmentExpression.setOperator(Assignment.Operator.ASSIGN);
+		assignmentExpression.setRightHandSide(rhs);
+		return assignmentExpression;
+	}
+
+	public boolean addStatement(Object statement) {
+		return block.statements().add(statement);
+	}
+
 	public void buildMethodInvocation(String name, String simpleName) {
-		MethodInvocation methodInvocation = ast.newMethodInvocation();
-		buildMethodInvocation(ast.newSimpleName(name),
-				ast.newSimpleName(simpleName));
+		buildMethodInvocation(ast.newSimpleName(name), ast.newSimpleName(simpleName));
 	}
 
 	public void buildMethodInvocation(Name name, SimpleName simpleName) {
@@ -37,8 +49,7 @@ public class JavaBlockBuilder {
 
 	public void addMethodBlockDemo() {
 		MethodInvocation methodInvocation = ast.newMethodInvocation();
-		QualifiedName name = ast.newQualifiedName(ast.newSimpleName("System"),
-				ast.newSimpleName("out"));
+		QualifiedName name = ast.newQualifiedName(ast.newSimpleName("System"), ast.newSimpleName("out"));
 		methodInvocation.setExpression(name);
 		methodInvocation.setName(ast.newSimpleName("println"));
 		InfixExpression infixExpression = ast.newInfixExpression();
@@ -50,8 +61,7 @@ public class JavaBlockBuilder {
 		literal.setLiteralValue(" world");
 		infixExpression.setRightOperand(literal);
 		methodInvocation.arguments().add(infixExpression);
-		ExpressionStatement expressionStatement = ast
-				.newExpressionStatement(methodInvocation);
+		ExpressionStatement expressionStatement = ast.newExpressionStatement(methodInvocation);
 		block.statements().add(expressionStatement);
 	}
 

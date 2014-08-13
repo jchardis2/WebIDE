@@ -60,7 +60,7 @@ public class JavaClassBuilder {
 		}
 		PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
 		packageDeclaration.setName(name);
-		((CompilationUnit) compilationUnit).setPackage(packageDeclaration);
+		compilationUnit.setPackage(packageDeclaration);
 	}
 
 	/**
@@ -176,6 +176,7 @@ public class JavaClassBuilder {
 
 	}
 
+	@Deprecated
 	public void addMethodBlock(MethodDeclaration methodDeclaration) {
 		org.eclipse.jdt.core.dom.Block block = ast.newBlock();
 		MethodInvocation methodInvocation = ast.newMethodInvocation();

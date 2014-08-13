@@ -98,7 +98,6 @@ public class JavaClassGenerator extends AbstractBeanGenerator {
 			methodDeclaration.parameters().add(variableDeclaration);
 
 			Block block = ast.newBlock();
-			MethodInvocation methodInvocation = ast.newMethodInvocation();
 			ThisExpression thisExpression = ast.newThisExpression();
 			FieldAccess fa = ast.newFieldAccess();
 			fa.setExpression(thisExpression);
