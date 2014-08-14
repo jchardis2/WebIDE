@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.text.BadLocationException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -29,16 +31,25 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 
 import com.ias.webide.java.JavaProjectBuilder;
 import com.ias.webide.java.db.mysql.util.JavaClassGenerator;
 import com.ias.webide.java.maven.MavenJavaProjectBuilder;
 import com.ias.webide.java.maven.WarPomBuilder;
+import com.ias.webide.plugin.java.util.JavaClassFormatter;
 import com.ias.webide.plugin.util.ProjectResolver;
 import com.ias.webide.plugin.util.ProjectUtil;
 import com.infinityappsolutions.webdesigner.tools.database.DAOReader;
@@ -67,8 +78,13 @@ public class WebIDEHandler extends AbstractHandler {
 
 		DAOReader daoReader = new DAOReader();
 		daoReader.setConnection();
+		JavaClassFormatter classFormatter = new JavaClassFormatter();
 		try {
-			ArrayList<DatabaseTable> databaseTable = daoReader.getDatabaseTables();
+			ArrayList<DatabaseTable> databaseTables = daoReader.getDatabaseTables();
+			for (DatabaseTable databaseTable2 : databaseTables) {
+
+			}
+
 			ProjectResolver projectResolver = ProjectResolver.getInstance();
 			IJavaProject iJavaProject = projectResolver.getInstance().resolveProject("Test");
 			iJavaProject.open(new NullProgressMonitor());
@@ -82,14 +98,19 @@ public class WebIDEHandler extends AbstractHandler {
 			iPackageFragment.open(new NullProgressMonitor());
 			// iPackageFragment.open(new NullProgressMonitor());
 			System.out.println("Name: " + iPackageFragment.getElementName());
-			JavaClassGenerator classGenerator = new JavaClassGenerator(iJavaProject, iPackageFragment);
-			classGenerator.createClass(databaseTable.get(0), "com.ias.test.beans", "TestClass", false, false, true);
-			CompilationUnit cu = classGenerator.getCu();
-			IJavaElement classPath = cu.getJavaElement();
-			System.out.println(classPath);
-			ICompilationUnit icu = iPackageFragment.createCompilationUnit("TestClass.java", cu.toString(), true, new NullProgressMonitor());
-			ProjectUtil projectUtil = new ProjectUtil();
-			projectUtil.refreshProject(iJavaProject.getResource());
+
+			for (DatabaseTable databaseTable : databaseTables) {
+
+				JavaClassGenerator classGenerator = new JavaClassGenerator(iJavaProject, iPackageFragment);
+				classGenerator.createClass(databaseTable, "com.ias.test.beans", databaseTable.getName(), true, true, true);
+				CompilationUnit cu = classGenerator.getCu();
+				IJavaElement classPath = cu.getJavaElement();
+				System.out.println(classPath);
+				String source = classFormatter.format(cu.toString());
+				ICompilationUnit icu = iPackageFragment.createCompilationUnit(databaseTable.getName() + ".java", source, true, new NullProgressMonitor());
+				ProjectUtil projectUtil = new ProjectUtil();
+				projectUtil.refreshProject(iJavaProject.getResource());
+			}
 			System.out.println("Done building java project");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -98,6 +119,12 @@ public class WebIDEHandler extends AbstractHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedTreeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (org.eclipse.jface.text.BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

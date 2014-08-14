@@ -3,14 +3,17 @@ package com.ias.webide.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
@@ -199,6 +202,23 @@ public class JavaClassBuilder {
 
 	public boolean addMethod(MethodDeclaration methodDeclaration) {
 		return classType.bodyDeclarations().add(methodDeclaration);
+	}
+
+	public boolean addField(FieldDeclaration declaration) {
+		return classType.bodyDeclarations().add(declaration);
+	}
+
+	public boolean addField(VariableDeclarationFragment fragment, Modifier.ModifierKeyword keyword, Type type) {
+		FieldDeclaration declaration = ast.newFieldDeclaration(fragment);
+		declaration.setType(type);
+		declaration.modifiers().add(ast.newModifier(keyword));
+		return addField(declaration);
+	}
+
+	public boolean addField(Modifier.ModifierKeyword keyword, String name, String type) {
+		VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
+		fragment.setName(ast.newSimpleName(name));
+		return addField(fragment, keyword, ast.newSimpleType(ast.newSimpleName(type)));
 	}
 
 	public String generateClass() {
