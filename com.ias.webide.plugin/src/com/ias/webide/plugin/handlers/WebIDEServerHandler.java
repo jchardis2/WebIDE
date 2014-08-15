@@ -57,7 +57,7 @@ public class WebIDEServerHandler extends AbstractHandler {
 				// IProject project = root.getProject("WebIDE");
 				// String webContentPath = project.getRawLocation().toString() +
 				// File.seperator + "WebContent";
-				iasServer.addWebApp(webContentPath, "/WebIDE");
+				iasServer.addWebApp(webContentPath, "/");
 				// iasServer.addWebApp(projectPath);
 				iasServer.start();
 				// iasServer.join();

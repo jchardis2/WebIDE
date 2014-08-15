@@ -1,0 +1,9 @@
+<managed-bean>
+	<managed-bean-name> projectsBean </managed-bean-name>
+	<managed-bean-class>
+		com.ias.webide.webapp.java.beans.ProjectsBean
+	</managed-bean-class>
+	<managed-bean-scope> Session </managed-bean-scope>
+	<managed-property>
+	</managed-property>
+</managed-bean>

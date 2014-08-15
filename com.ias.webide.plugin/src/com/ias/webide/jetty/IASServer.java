@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 
-import javax.naming.NamingException;
-
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.PropertiesConfigurationManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
@@ -30,18 +27,19 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
-import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.ias.webide.plugin.tools.PluginFileResolver;
+import com.ias.webide.jetty.handlers.ProjectHandler;
 
 public class IASServer {
 	/*
@@ -183,24 +181,41 @@ public class IASServer {
 		MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
 		server.addBean(mbContainer);
 
-		// The WebAppContext is the entity that controls the environment in
-		// which a web application lives and
-		// breathes. In this example the context path is being set to "/" so it
-		// is suitable for serving root context
-		// requests and then we see it setting the location of the war. A whole
-		// host of other configurations are
-		// available, ranging from configuring to support annotation scanning in
-		// the webapp (through
-		// PlusConfiguration) to choosing where the webapp will unpack itself.
 		WebAppContext webapp = new WebAppContext();
-
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		ProjectHandler handler = new ProjectHandler(workspace);
+		handler.setContextPath("/test/");
 		webapp.setContextPath(contextPath);
 		webapp.setWar(warPath);
+		// webapp.setHandler(handler);
 
-		// A WebAppContext is a ContextHandler as well so it needs to be set to
-		// the server so it is aware of where to
-		// send the appropriate requests.
-		server.setHandler(webapp);
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] { handler, webapp, new DefaultHandler() });
+		// webapp.setHandler(handler);
+		// server.setHandler(handler);
+
+		// server.setHandler(webapp);
+		server.setHandler(handlers);
+		// webapp.setHandler(handler);
+	}
+
+	public void example() {
+		// ContextHandler context0 = new ContextHandler();
+		// context0.setContextPath("/");
+		// ResourceHandler rh0 = new ResourceHandler();
+		// rh0.setBaseResource(Resource.newResource(MavenTestingUtils.getTestResourceDir("dir0")));
+		// context0.setHandler(rh0);
+		// ContextHandler context1 = new ContextHandler();
+		// context1.setContextPath("/");
+		// ResourceHandler rh1 = new ResourceHandler();
+		// rh1.setBaseResource(Resource.newResource(MavenTestingUtils.getTestResourceDir("dir1")));
+		// context1.setHandler(rh1);
+		// ContextHandlerCollection contexts = new ContextHandlerCollection();
+		// contexts.setHandlers(new Handler[] { context0, context1 });
+		// server.setHandler(contexts);
+		// server.start();
+		// System.err.println(server.dump());
+		// server.join();
 	}
 
 	// public void addWebApps(ContextHandlerCollection contexts) {
