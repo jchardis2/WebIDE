@@ -17,6 +17,14 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.text;bundle-version="3.5.300",
  com.ias.webide.jetty.plugin;bundle-version="1.0.0",
  com.ias.webide.maven.plugin;bundle-version="1.0.0",
- com.ias.webide.webapp.plugin;bundle-version="1.0.0"
+ com.ias.webide.webapp.plugin;bundle-version="1.0.0",
+ org.hibernate.eclipse;bundle-version="3.7.1",
+ org.hibernate.eclipse.console;bundle-version="3.7.1",
+ org.hibernate.eclipse.help;bundle-version="3.7.1",
+ org.hibernate.eclipse.jdt.apt.ui;bundle-version="3.7.1",
+ org.hibernate.eclipse.jdt.ui;bundle-version="3.7.1",
+ org.hibernate.eclipse.libs;bundle-version="3.7.1",
+ org.hibernate.eclipse.mapper;bundle-version="3.7.1",
+ org.eclipse.pde.runtime;bundle-version="3.4.400"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
