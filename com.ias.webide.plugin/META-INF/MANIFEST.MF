@@ -21,7 +21,8 @@ Require-Bundle: com.ias.webide.jetty.plugin;bundle-version="1.0.0",
  org.eclipse.debug.core;bundle-version="3.9.0",
  org.hibernate.eclipse.libs;bundle-version="3.7.1",
  org.hibernate.eclipse.console;bundle-version="3.7.1",
- org.hibernate.eclipse;bundle-version="3.7.1"
+ org.hibernate.eclipse;bundle-version="3.7.1",
+ org.eclipse.datatools.connectivity;bundle-version="1.2.11"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: org.hibernate.service

@@ -1,4 +1,4 @@
-package com.ias.webide.hibernate;
+package com.ias.webide.java.hibernate;
 
 import org.hibernate.cfg.reveng.DefaultDatabaseCollector;
 import org.hibernate.cfg.reveng.JDBCReader;

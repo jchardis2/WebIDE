@@ -1,4 +1,4 @@
-package com.ias.webide.hibernate;
+package com.ias.webide.java.hibernate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,6 +12,13 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.tool.hbm2x.HibernateConfigurationExporter;
 
 public class HibernateCFGBuilder {
+	public static final String HIBERNATE_CONNECTION_DRIVER_CLASS_MYSQL = "com.mysql.jdbc.Driver";
+	public static final String HIBERNATE_DIALECT_MYSQL = "com.mysql.jdbc.Driver";
+
+	public static final String DEFAULT_HIBERNATE_CONNECTION_DRIVER_CLASS_MYSQL = HIBERNATE_CONNECTION_DRIVER_CLASS_MYSQL;
+	public static final String DEFAULT_HIBERNATE_DIALECT_MYSQL = HIBERNATE_DIALECT_MYSQL;
+	public static final String DEFAULT_HIBERNATE_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
+
 	public static void main(String[] args) {
 		HibernateCFGBuilder builder = new HibernateCFGBuilder();
 		builder.buildCFG("sessionF", "dialect", "dc", "ds", "isas.com", "drov", "jchardis", "123");
