@@ -43,16 +43,7 @@ import org.hibernate.util.xpl.ReflectHelper;
 
 public class HibernateCodeGenerationBuilder {
 
-	public void buildCode() throws CoreException {
-		ILaunchConfiguration[] iLaunchConfigurations = LaunchHelper.findCodeGenerationConfigs();
-		ILaunchConfiguration iLaunchConfiguration = iLaunchConfigurations[0];
-		Map<String, Object> map2 = iLaunchConfiguration.getAttributes();
-		Set<String> set = map2.keySet();
-		for (String string : set) {
-			System.out.println("Key: " + string);
-			Object o = map2.get(string);
-			System.out.println(map2.get(string));
-		}
+	public void buildCode(ILaunchConfiguration iLaunchConfiguration) throws CoreException {
 		final ExporterAttributes attributes = new ExporterAttributes(iLaunchConfiguration);
 
 		List<ExporterFactory> exporterFactories = attributes.getExporterFactories();

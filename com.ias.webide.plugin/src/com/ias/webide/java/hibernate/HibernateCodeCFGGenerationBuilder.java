@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -28,13 +27,17 @@ public class HibernateCodeCFGGenerationBuilder {
 	protected BestGuessConsoleConfigurationVisitor v;
 	protected ILaunchConfiguration launchConfig;
 	protected ILaunchConfigurationWorkingCopy launchConfigWC;
+	private IJavaProject iJavaProject;
 
-	public HibernateCodeCFGGenerationBuilder() {
+	public HibernateCodeCFGGenerationBuilder(IJavaProject iJavaProject) {
+		this.iJavaProject = iJavaProject;
 	}
 
-	public ILaunchConfiguration buildDefaultConfiguration(String launchConfigurationName) throws CoreException {
+	public ILaunchConfiguration buildDefaultConfiguration(String launchConfigurationName, String consoleConfigurationName, String outputPackage) throws CoreException {
 		launchConfig = createTemporaryLaunchConfiguration(launchConfigurationName);
 		launchConfigWC = launchConfig.getWorkingCopy();
+		setAttributes(iJavaProject.getPath().append("src").toOSString(), true, true, true, true, true, "", "", false, "", consoleConfigurationName, outputPackage, false, false,
+				false);
 		setDefaultExporterAttributes();
 		makeTemporaryLaunchConfigurationPermanent(launchConfigWC);
 		Map<String, Object> map2 = launchConfigWC.getAttributes();
@@ -87,30 +90,30 @@ public class HibernateCodeCFGGenerationBuilder {
 		return listTempConfigs;
 	}
 
-	public void setAttributes(ILaunchConfigurationWorkingCopy config, String outputDir, boolean preferRawCompositeIds, boolean autoManyToMany, boolean autoOneToOne,
-			boolean autoVersioning, boolean isReverseEngineerEnabled, String reverseEngineeringStrategy, String reverseEngineeringSettings, boolean useOwnTemplates,
-			String templatedir, String consoleConfigurationName, String outputPackage, boolean useExternalProcess, String enableEJB3annotations, String enableJDK5) {
+	public void setAttributes(String outputDir, boolean preferRawCompositeIds, boolean autoManyToMany, boolean autoOneToOne, boolean autoVersioning,
+			boolean isReverseEngineerEnabled, String reverseEngineeringStrategy, String reverseEngineeringSettings, boolean useOwnTemplates, String templatedir,
+			String consoleConfigurationName, String outputPackage, boolean useExternalProcess, boolean enableEJB3annotations, boolean enableJDK5) {
 		// CodeGenerationSettingTab
-		config.setAttribute(HibernateLaunchConstants.ATTR_OUTPUT_DIR, strOrNull(outputDir));
-		config.setAttribute(HibernateLaunchConstants.ATTR_PREFER_BASIC_COMPOSITE_IDS, preferRawCompositeIds);
-		config.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_MANY_TO_MANY, autoManyToMany);
-		config.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_ONE_TO_ONE, autoOneToOne);
-		config.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_VERSIONING, autoVersioning);
-		config.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER, isReverseEngineerEnabled);
-		config.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER_STRATEGY, strOrNull(reverseEngineeringStrategy));
-		config.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER_SETTINGS, strOrNull(reverseEngineeringSettings));
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_OUTPUT_DIR, strOrNull(outputDir));
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_PREFER_BASIC_COMPOSITE_IDS, preferRawCompositeIds);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_MANY_TO_MANY, autoManyToMany);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_ONE_TO_ONE, autoOneToOne);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_AUTOMATIC_VERSIONING, autoVersioning);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER, isReverseEngineerEnabled);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER_STRATEGY, strOrNull(reverseEngineeringStrategy));
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_REVERSE_ENGINEER_SETTINGS, strOrNull(reverseEngineeringSettings));
 
-		config.setAttribute(HibernateLaunchConstants.ATTR_USE_OWN_TEMPLATES, useOwnTemplates);
-		config.setAttribute(HibernateLaunchConstants.ATTR_TEMPLATE_DIR, strOrNull(templatedir));
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_USE_OWN_TEMPLATES, useOwnTemplates);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_TEMPLATE_DIR, strOrNull(templatedir));
 
-		config.setAttribute(HibernateLaunchConstants.ATTR_CONSOLE_CONFIGURATION_NAME, consoleConfigurationName);
-		config.setAttribute(HibernateLaunchConstants.ATTR_PACKAGE_NAME, outputPackage);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_CONSOLE_CONFIGURATION_NAME, strOrNull(consoleConfigurationName));
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_PACKAGE_NAME, strOrNull(outputPackage));
 
-		config.setAttribute(HibernateLaunchConstants.ATTR_USE_EXTERNAL_PROCESS, useExternalProcess);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_USE_EXTERNAL_PROCESS, useExternalProcess);
 
 		// ExporterSettingsTab
-		config.setAttribute(HibernateLaunchConstants.ATTR_ENABLE_EJB3_ANNOTATIONS, enableEJB3annotations);
-		config.setAttribute(HibernateLaunchConstants.ATTR_ENABLE_JDK5, enableJDK5);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_ENABLE_EJB3_ANNOTATIONS, enableEJB3annotations);
+		launchConfigWC.setAttribute(HibernateLaunchConstants.ATTR_ENABLE_JDK5, enableJDK5);
 
 		// List<ExporterFactory> exporterFactories = ((ObservableFactoryList)
 		// getExporterTable().getInput()).getList();

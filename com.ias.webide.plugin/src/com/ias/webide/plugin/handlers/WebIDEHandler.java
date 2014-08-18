@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.datatools.connectivity.ConnectionProfileException;
 import org.eclipse.datatools.connectivity.IConnectionProfile;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -73,34 +74,36 @@ public class WebIDEHandler extends AbstractHandler {
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// try {
-		HibernateCodeCFGGenerationBuilder cfgGenerationBuilder = new HibernateCodeCFGGenerationBuilder();
+		ProjectResolver projectResolver = ProjectResolver.getInstance();
+		IJavaProject iJavaProject = projectResolver.resolveProject("TmpHibernateTestProject");
 		try {
-			cfgGenerationBuilder.buildDefaultConfiguration("NewTestCodeGeneratorConfig");
+			IConnectionProfile iConnectionProfile = createConnectionProfile();
+			buildHibernateConsoleConfiguration(iJavaProject, "TestConfig" + count++, iConnectionProfile.getName());
+			ILaunchConfiguration codeGenLaunchCFG = createCodeGenerationLaunchCFG(iJavaProject, "NewTestCodeGeneratorConfig", "HibernateTestProject", "com.test.beans");
+			buildHibernateCode(codeGenLaunchCFG);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ConnectionProfileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		// IConnectionProfile iConnectionProfile = createConnectionProfile();
-		// buildHibernateConsoleConfiguration("TestConfig" + count++,
-		// "TmpHibernateTestProject", iConnectionProfile.getName());
-		// buildHibernateCode();
-		// } catch (ConnectionProfileException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 		return null;
+	}
+
+	public ILaunchConfiguration createCodeGenerationLaunchCFG(IJavaProject iJavaProject, String launchConfigurationName, String consoleConfigurationName, String outputPackage)
+			throws CoreException {
+		HibernateCodeCFGGenerationBuilder cfgGenerationBuilder = new HibernateCodeCFGGenerationBuilder(iJavaProject);
+		return cfgGenerationBuilder.buildDefaultConfiguration(launchConfigurationName, consoleConfigurationName, outputPackage);
 	}
 
 	public IConnectionProfile createConnectionProfile() throws ConnectionProfileException {
 		ConnectionProfileBuilder connectionProfileBuilder = new ConnectionProfileBuilder();
-		connectionProfileBuilder.getConnectionProfiles();
 		return connectionProfileBuilder.createMysqlProfile("TestName", "TestDescription", "ias", "mytestpassword", ConnectionProfileBuilder.MYSQL__DRIVER_URL + "webide", "webide",
 				String.valueOf("true"));
 	}
 
-	public void buildHibernateConsoleConfiguration(String consoleCfgName, String projectName, String connectionProfileName) {
-		ProjectResolver projectResolver = ProjectResolver.getInstance();
-		IJavaProject iJavaProject = projectResolver.resolveProject(projectName);
+	public void buildHibernateConsoleConfiguration(IJavaProject iJavaProject, String consoleCfgName, String connectionProfileName) {
 		HibernateConsoleCFGBuilder cfgBuilder = new HibernateConsoleCFGBuilder(iJavaProject);
 		try {
 			cfgBuilder.buildDefaultConfiguration(consoleCfgName, iJavaProject.getPath().append("hibernate.cfg.xml"), connectionProfileName);
@@ -110,10 +113,10 @@ public class WebIDEHandler extends AbstractHandler {
 		}
 	}
 
-	public void buildHibernateCode() {
+	public void buildHibernateCode(ILaunchConfiguration iLaunchConfiguration) {
 		try {
 			HibernateCodeGenerationBuilder builder = new HibernateCodeGenerationBuilder();
-			builder.buildCode();
+			builder.buildCode(iLaunchConfiguration);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
