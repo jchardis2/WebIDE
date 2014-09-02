@@ -39,6 +39,8 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.text.edits.MalformedTreeException;
 
+import com.ias.webide.plugin.util.ProjectResolver;
+import com.ias.webide.plugin.util.ProjectUtil;
 import com.ias.webide.eclipse.dbprofiles.ConnectionProfileBuilder;
 import com.ias.webide.java.JavaProjectBuilder;
 import com.ias.webide.java.db.mysql.util.JavaClassGenerator;
@@ -48,8 +50,6 @@ import com.ias.webide.java.hibernate.HibernateConsoleCFGBuilder;
 import com.ias.webide.java.maven.MavenJavaProjectBuilder;
 import com.ias.webide.java.maven.WarPomBuilder;
 import com.ias.webide.plugin.java.util.JavaClassFormatter;
-import com.ias.webide.plugin.util.ProjectResolver;
-import com.ias.webide.plugin.util.ProjectUtil;
 import com.infinityappsolutions.webdesigner.tools.database.DAOReader;
 import com.infinityappsolutions.webdesigner.tools.database.DAOReader.DatabaseTable;
 

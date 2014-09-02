@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.ias.webide.jetty.ConfigPropertiesUtil;
-import com.ias.webide.jetty.IASServer;
 
 public class PluginPropertiesUtil {
 	public static final String COM_IAS_WEBIDE_PLUGIN_WEBAPPS = "com.ias.webide.plugin.webapps";

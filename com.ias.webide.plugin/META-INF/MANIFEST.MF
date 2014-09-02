@@ -19,12 +19,18 @@ Require-Bundle: com.ias.webide.jetty.plugin;bundle-version="1.0.0",
  org.eclipse.text;bundle-version="3.5.300",
  org.eclipse.pde.runtime;bundle-version="3.4.400",
  org.eclipse.debug.core;bundle-version="3.9.0",
- org.hibernate.eclipse.libs;bundle-version="3.7.1",
- org.hibernate.eclipse.console;bundle-version="3.7.1",
- org.hibernate.eclipse;bundle-version="3.7.1",
  org.eclipse.datatools.connectivity;bundle-version="1.2.11",
  org.eclipse.jst.jsf.common;bundle-version="1.5.0",
- org.eclipse.jst.jsf.core;bundle-version="1.7.0"
+ org.eclipse.jst.jsf.core;bundle-version="1.7.0",
+ org.hibernate.eclipse;bundle-version="3.7.1",
+ org.hibernate.eclipse.console;bundle-version="3.7.1",
+ org.hibernate.eclipse.help;bundle-version="3.7.1",
+ org.hibernate.eclipse.jdt.apt.ui;bundle-version="3.7.1",
+ org.hibernate.eclipse.jdt.ui;bundle-version="3.7.1",
+ org.hibernate.eclipse.libs;bundle-version="3.7.1",
+ org.hibernate.eclipse.mapper;bundle-version="3.7.1",
+ com.ias.jetty.server;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: org.hibernate.service
+Export-Package: com.ias.webide.plugin.util

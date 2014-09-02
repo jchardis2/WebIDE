@@ -7,14 +7,7 @@ import java.net.URISyntaxException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
 import com.ias.webide.jetty.IASServer;
 import com.ias.webide.plugin.util.PluginFileResolver;
@@ -46,19 +39,15 @@ public class WebIDEServerHandler extends AbstractHandler {
 				iasServer.loadSystemProperties(fileResolver.getAbsolutePath("config.properties"));
 				iasServer.setJetty_home(fileResolver.getAbsolutePath("jetty"));
 				iasServer.setWebbapp_home(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getAbsolutePath() + File.separator + "webapps");
-				iasServer.configureHttp();
-				iasServer.configureHttps();
+				iasServer.configure();
+//				iasServer.configureHttp();
+//				iasServer.configureHttps();
+				
 				// ContextHandlerCollection contexts = iasServer.configure();
 				// iasServer.fullWebAppDeployment(contexts);
+				
 				String webContentPath = fileResolver.getAbsolutePath("WebContent");
-				// find project
-				// IWorkspaceRoot root =
-				// ResourcesPlugin.getWorkspace().getRoot();
-				// IProject project = root.getProject("WebIDE");
-				// String webContentPath = project.getRawLocation().toString() +
-				// File.seperator + "WebContent";
-				iasServer.addWebApp(webContentPath, "/");
-				// iasServer.addWebApp(projectPath);
+				iasServer.addPluginWebApp(webContentPath, "/");
 				iasServer.start();
 				// iasServer.join();
 			} catch (InterruptedException e) {
