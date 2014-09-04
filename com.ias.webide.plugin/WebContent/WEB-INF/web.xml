@@ -43,6 +43,7 @@
 	</listener>
 
 	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
 		<welcome-file>welcome.jsf</welcome-file>
 	</welcome-file-list>
 

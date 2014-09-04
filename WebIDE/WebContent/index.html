@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html ng-app="webIDE">
+<head>
+<script type="text/javascript"
+	src="https://code.angularjs.org/1.3.0-beta.12/angular.js">
+	
+</script>
+<script type="text/javascript"
+	src="resources/js/ui-bootstrap-tpls-0.11.0.js"></script>
+<script src="resources/js/app.js"></script>
+<script src="resources/js/app.demo.bootstrap.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="resources/css/bootstrap.css">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body ng-controller="PageCntl as page">
+	<div id="appContainer">
+
+		<div id="navContainer" ng-include="nav.url"></div>
+		<div id="pageContainer" ng-include="url"></div>
+	</div>
+</body>
+</html>
