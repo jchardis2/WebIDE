@@ -12,11 +12,11 @@
 		<param-name>javax.faces.PROJECT_STAGE</param-name>
 		<param-value>Development</param-value>
 	</context-param>
-<!-- 	<context-param> -->
-<!-- 		<param-name>javax.faces.CONFIG_FILES</param-name> -->
-<!-- 		<param-value>WEB-INF/faces-config.xml</param-value> -->
-<!-- 	</context-param> -->
-<!-- 	JSF mapping -->
+	<!-- <context-param> -->
+	<!-- <param-name>javax.faces.CONFIG_FILES</param-name> -->
+	<!-- <param-value>WEB-INF/faces-config.xml</param-value> -->
+	<!-- </context-param> -->
+	<!-- JSF mapping -->
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -41,6 +41,17 @@
 	<listener>
 		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
 	</listener>
+
+	<!-- webide servlets -->
+	<servlet>
+		<servlet-name>DBServlet</servlet-name>
+		<servlet-class>com.infinityappsolutions.server.servlets.DBServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>DBServlet</servlet-name>
+		<url-pattern>/db</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

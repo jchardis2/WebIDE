@@ -14,7 +14,6 @@ var projects = [ {
 	name : "TestProject4"
 } ];
 
-
 var nav = {
 	url : "resources/html/nav.html"
 };
@@ -36,4 +35,17 @@ app.controller('ProjectCntl', function($scope) {
 		$scope.project = projects[id];
 	}
 });
-
+app.controller('DBCntl', function($scope) {
+	$scope.getDbs = function() {
+		$http({
+			method : 'GET',
+			url : '/db?action=listDBs'
+		}).success(function(data, status, headers, config) {
+			// this callback will be called asynchronously
+			// when the response is available
+		}).error(function(data, status, headers, config) {
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		});
+	}
+});

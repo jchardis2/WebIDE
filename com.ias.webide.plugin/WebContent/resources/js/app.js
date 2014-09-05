@@ -1,27 +1,54 @@
-angular.module('plunker', ['ui.bootstrap']);
-function AccordionDemoCtrl($scope) {
-  $scope.oneAtATime = true;
+var app = angular.module('webIDE', [ 'ui.bootstrap' ]);
 
-  $scope.groups = [
-    {
-      title: 'Dynamic Group Header - 1',
-      content: 'Dynamic Group Body - 1'
-    },
-    {
-      title: 'Dynamic Group Header - 2',
-      content: 'Dynamic Group Body - 2'
-    }
-  ];
+var projects = [ {
+	id : "1",
+	name : "TestProject1"
+}, {
+	id : "2",
+	name : "TestProject2"
+}, {
+	id : "3",
+	name : "TestProject3"
+}, {
+	id : "4",
+	name : "TestProject4"
+} ];
 
-  $scope.items = ['Item 1', 'Item 2', 'Item 3'];
+var nav = {
+	url : "resources/html/nav.html"
+};
 
-  $scope.addItem = function() {
-    var newItemNo = $scope.items.length + 1;
-    $scope.items.push('Item ' + newItemNo);
-  };
+app.controller('PageCntl', function($scope) {
+	$scope.nav = nav;
+	$scope.url = "resources/html/projects.html";
 
-  $scope.status = {
-    isFirstOpen: true,
-    isFirstDisabled: false
-  };
-}
+	$scope.setPageUrl = function(url) {
+		$scope.url = url;
+	}
+});
+
+app.controller('ProjectCntl', function($scope) {
+	$scope.projects = projects;
+	$scope.project = projects[0];
+
+	$scope.setProject = function(index) {
+		$scope.project = projects[id];
+	}
+});
+app.controller('DBCntl', function($scope, $http) {
+	$scope.getDbs = function() {
+		$http({
+			method : 'GET',
+			url : '/db?action=listdbs'
+		}).success(function(data, status, headers, config) {
+			// this callback will be called asynchronously
+			// when the response is available
+			console.log(data);
+			''
+		}).error(function(data, status, headers, config) {
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		});
+	}
+	$scope.getDbs();
+});
