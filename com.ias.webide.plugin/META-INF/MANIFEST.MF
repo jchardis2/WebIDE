@@ -5,8 +5,7 @@ Bundle-SymbolicName: com.ias.webide.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.ias.webide.plugin.Activator
 Bundle-Vendor: IAS
-Require-Bundle: com.ias.webide.jetty.plugin;bundle-version="1.0.0",
- com.ias.webide.maven.plugin;bundle-version="1.0.0",
+Require-Bundle: com.ias.jetty.server;bundle-version="1.0.0",
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.9.0",
@@ -29,7 +28,8 @@ Require-Bundle: com.ias.webide.jetty.plugin;bundle-version="1.0.0",
  org.hibernate.eclipse.jdt.ui;bundle-version="3.7.1",
  org.hibernate.eclipse.libs;bundle-version="3.7.1",
  org.hibernate.eclipse.mapper;bundle-version="3.7.1",
- com.ias.jetty.server;bundle-version="1.0.0"
+ com.ias.webide.maven.plugin;bundle-version="1.0.0",
+ com.ias.webide.jetty.plugin;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: org.hibernate.service

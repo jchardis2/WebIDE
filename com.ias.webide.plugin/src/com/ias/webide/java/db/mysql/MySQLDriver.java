@@ -1,5 +1,4 @@
 package com.ias.webide.java.db.mysql;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,13 +10,13 @@ public class MySQLDriver {
 	public Connection getConnection() throws SQLException, ClassNotFoundException {
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection connection = null;
-		return DriverManager.getConnection(DEFAULT_CONNECTION_URL, "ias", "mytestpassword");
+		return DriverManager.getConnection(DEFAULT_CONNECTION_URL, "webide", "mytestpassword");
 	}
 
 	public Connection getConnection(String dbName) throws SQLException, ClassNotFoundException {
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection connection = null;
-		return DriverManager.getConnection(CONNECTION_URL + dbName, "ias", "mytestpassword");
+		return DriverManager.getConnection(CONNECTION_URL + dbName, "webide", "mytestpassword");
 	}
 
 }

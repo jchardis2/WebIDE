@@ -45,12 +45,28 @@
 	<!-- webide servlets -->
 	<servlet>
 		<servlet-name>DBServlet</servlet-name>
-		<servlet-class>com.infinityappsolutions.server.servlets.DBServlet</servlet-class>
+		<servlet-class>com.ias.webide.server.servlets.DBServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>DBServlet</servlet-name>
 		<url-pattern>/db</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>jersey-serlvet</servlet-name>
+		<servlet-class>
+                     org.glassfish.jersey.servlet.ServletContainer
+                </servlet-class>
+		<init-param>
+		     <param-name>org.glassfish.jersey.config.property.packages</param-name>
+		     <param-value>com.ias.webide.server.rest</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-serlvet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>

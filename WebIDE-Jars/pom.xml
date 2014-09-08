@@ -115,6 +115,12 @@
 			<artifactId>jta</artifactId>
 			<version>1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>2.12</version>
+		</dependency>
+
 
 
 	</dependencies>

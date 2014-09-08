@@ -1,0 +1,168 @@
+<div id="dbs" class="container-fluid" ng-controller="DBCntl as dbCntl">
+	<div class="row">
+		<div id="dbListColumn" class="col-xs-2" style="overflow-y: scroll;">
+			<accordion style="width: 100%;"> <accordion-group
+				ng-repeat="db in dbs"> <accordion-heading>
+			<a
+				ng-click="setDb(db);setTable('');updateLocation();setShownContent('showDatabaseTables')">{{db.name}}</a>
+			</accordion-heading>
+			<ul>
+				<li a ng-repeat="table in db.tables"
+					ng-click="setTable(table);updateLocation();getTableMetaData();setShownContent('showTableMetadata')"><a>{{table.name}}</a>
+				</li>
+			</ul>
+			</accordion-group> </accordion>
+		</div>
+		<div id="dbContentColumn" class="col-xs-10"
+			style="overflow-y: scroll;">
+			<!-- 			<h4>{{"Location: " + location}}</h4> -->
+			<ol class="breadcrumb">
+				<li ng-repeat="location in locations"><a
+					href="{{location.location}}"
+					ng-click="setDb(location.db);setTable(location.table);handleUpdate('updateDbs');">{{location.name}}</a></li>
+			</ol>
+			<div id="displayContent">
+				<div id="dbContent" ng-show="showDatabases">
+					<div id="dbActions">
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="setShownActionContent('showAddDatabases')">Add
+							Database</button>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="deleteDB();setShownActionContent('showDeleteDatabases')">Delete
+							Databases</button>
+					</div>
+					<div id="addDatabaseAction" class="form-group"
+						ng-show="showAddDatabases">
+						<label for="dbName">Name: </label> <input type="text" id="dbName"
+							ng-model="newDB.name">
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="addNewDB();setShownActionContent('')">Add
+							Database</button>
+					</div>
+					<table class="table table-hover table-condensed table-bordered">
+						<thead>
+							<tr>
+								<th>Selected</th>
+								<th>Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="db in dbs">
+								<td><input ng-model="dbs" type="checkbox"
+									ng-change="selectDB(db)" ng-true-value="{{db}}"
+									ng-false-value="" /></td>
+								<td><a
+									ng-click="setDb(db);setTable('');updateLocation();setShownContent('showDatabaseTables')">{{db.name}}</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div id="tables" ng-show="showDatabaseTables">
+					<div id="tableActions">
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="setShownActionContent('showAddTable')">Add
+							Table</button>
+					</div>
+					<div id="addTableActions" ng-show="showAddTable">
+						<label for="tableName">Name: </label> <input type="text"
+							id="tableName" ng-model="newTable.name"> </br>
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th ng-repeat="key in newColumnKeys">{{key}}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="column in newColumn">
+									<td ng-repeat="key in newColumnKeys"><input type="text">{{column[key]}}</input></td>
+								</tr>
+							</tbody>
+						</table>
+						</br>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="addNewTable();setShownActionContent('')">Add
+							Table</button>
+					</div>
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="table in db.tables">
+								<td><a
+									ng-click="setTable(table);updateLocation();getTableMetaData();setShownContent('showTableMetadata')">{{table.name}}</a></td>
+								<td><a
+									ng-click="setTable(table);updateLocation();getTableData();setShownContent('showTableData')">Browse</a>
+									| <a
+									ng-click="setTable(table);updateLocation();getTableMetaData();setShownContent('showTableMetadata')">View
+										MetaData</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div id="tableMetaData" ng-show="showTableContent">
+					<div>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-show="showTableMetadata && !showTableData"
+							ng-click="getTableData();setShownContent('showTableData')">Browse
+						</button>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-show="!showTableMetadata && showTableData"
+							ng-click="getTableData();setShownContent('showTableMetadata')">View
+							MetaData</button>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-show="showTableMetadata" ng-click="">Add Column</button>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-show="showTableData" ng-click="">Insert Data</button>
+					</div>
+					<table class="
+						table table-hover
+						table-condensed"
+						ng-show="showTableMetadata">
+						<thead>
+							<tr>
+								<th>Field</th>
+								<th>Type</th>
+								<th>Null</th>
+								<th>Key</th>
+								<th>Default</th>
+								<th>Extra</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="data in tableMetaData">
+								<td>{{data.Field}}</td>
+								<td>{{data.Type}}</td>
+								<td>{{data.Null}}</td>
+								<td>{{data.Key}}</td>
+								<td>{{data.Default}}</td>
+								<td>{{data.Extra}}</td>
+								<td><a>Edit</a> | <a>Delete</a></td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="
+						table table-hover
+						table-condensed"
+						ng-show="showTableData">
+						<thead>
+							<tr>
+								<th ng-repeat="tablekey in tableKeys">{{tablekey}}</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="data in tableData">
+								<td ng-repeat="tablekey in tableKeys">{{data[tablekey]}}</td>
+								<td><a>Edit</a> | <a>Delete</a></td>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
