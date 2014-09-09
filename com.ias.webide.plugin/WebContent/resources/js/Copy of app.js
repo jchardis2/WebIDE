@@ -95,55 +95,53 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 		$scope.updateLocation();
 		$scope.showDatabases = true;
 
-		// Modifying db
 		$scope.newDB = {};
 		$scope.newTable = {};
 		$scope.newColumn = [ columnTemplate() ];
 		$scope.newColumnKeys = Object.keys($scope.newColumn[0])
 		$scope.selectedDbs = [];
-
-		// extras
-		$scope.alerts = [];
 	}
 
 	// getters and setters
 	$scope.getDbs = function() {
-		var data = {};
-		data.db = $scope.db;
-		$http.post('/rest/db/getDbs', {
-			params : data
+		$http({
+			method : 'GET',
+			url : '/db?action=listdbs'
 		}).success(function(data, status, headers, config) {
 			// this callback will be called asynchronously
 			// when the response is available
 			$scope.dbs = data.dbs;
 			return data;
 		}).error(function(data, status, headers, config) {
-			$scope.alerts = data.as;
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
 		});
 	};
 	$scope.getTableMetaData = function() {
-		var data = {};
-		data.db = $scope.db.name;
-		data.table = $scope.table.name;
-		$http.post('/rest/db/getTableMetaData', data, {
-			params : data
-		}).success(function(data, status, headers, config) {
+		$http(
+				{
+					method : 'GET',
+					url : '/db?action=getTableMetaData&db=' + $scope.db.name
+							+ '&table=' + $scope.table.name
+				}).success(function(data, status, headers, config) {
 			// this callback will be called
 			// asynchronously
 			// when the response is available
 			$scope.tableMetaData = data.tableMeta;
 			return data;
 		}).error(function(data, status, headers, config) {
-			$scope.alerts = data.as;
+			// called asynchronously if an error occurs
+			// or server returns response with an error
+			// status.
 		});
 	};
 	$scope.getTableData = function() {
-		var data = {};
-		data.db = $scope.db.name;
-		data.table = $scope.table.name;
-		$http.post('/rest/db/getTableData', data, {
-			params : data
-		}).success(function(data, status, headers, config) {
+		$http(
+				{
+					method : 'GET',
+					url : '/db?action=getTableData&db=' + $scope.db.name
+							+ '&table=' + $scope.table.name
+				}).success(function(data, status, headers, config) {
 			// this callback will be called
 			// asynchronously
 			// when the response is available
@@ -154,17 +152,17 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 				$scope.tableKeys = "";
 			return data;
 		}).error(function(data, status, headers, config) {
-			$scope.alerts = data.as;
+			// called asynchronously if an error occurs
+			// or server returns response with an error
+			// status.
 		});
 	};
 
 	// Updating DB
 	$scope.addNewDB = function() {
-
-		var data = {};
-		data.db = $scope.newDB.name;
-		$http.post('/rest/db/addNewDB', data, {
-			params : data
+		$http({
+			method : 'GET',
+			url : '/db?action=addNewDB&db=' + $scope.newDB.name
 		}).success(function(data, status, headers, config) {
 			// this callback will be called
 			// asynchronously
@@ -173,18 +171,21 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 			$scope.getDbs();
 			return data;
 		}).error(function(data, status, headers, config) {
-			$scope.alerts = data.as;
+			// called asynchronously if an error occurs
+			// or server returns response with an error
+			// status.
 		});
 	};
 	$scope.deleteDB = function() {
 		var i = 0;
 		var data = {};
 		var names = [];
+		data.action = "deleteDB";
 		for (i = 0; i < $scope.selectedDbs.length; i++) {
 			names[i] = $scope.selectedDbs[i].name;
 		}
 		data.names = JSON.stringify(names);
-		$http.post('/rest/db/deleteDB', data, {
+		$http.post('/db?', data, {
 			params : data
 		}).success(function(data, status, headers, config) {
 			// this callback will be called
@@ -194,7 +195,9 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 			$scope.getDbs();
 			return data;
 		}).error(function(data, status, headers, config) {
-			$scope.alerts = data.as;
+			// called asynchronously if an error occurs
+			// or server returns response with an error
+			// status.
 		});
 	};
 
@@ -298,17 +301,6 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 		$scope.getDbs();
 		$scope.updateLocation();
 	});
-
-	// alerts
-	$scope.closeAlert = function(index) {
-		$scope.alerts.splice(index, 1);
-		if ($scope.alerts.length == 0) {
-			$scope.alerts = [];
-		}
-	};
-	$scope.removeAlerts = function() {
-		$scope.alerts = [];
-	};
 
 	// final calls for setup
 	$scope.init()

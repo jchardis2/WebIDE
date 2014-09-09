@@ -16,11 +16,20 @@
 		<div id="dbContentColumn" class="col-xs-10"
 			style="overflow-y: scroll;">
 			<!-- 			<h4>{{"Location: " + location}}</h4> -->
-			<ol class="breadcrumb">
-				<li ng-repeat="location in locations"><a
-					href="{{location.location}}"
-					ng-click="setDb(location.db);setTable(location.table);handleUpdate('updateDbs');">{{location.name}}</a></li>
-			</ol>
+			<div id="informalContent">
+				<ol class="breadcrumb">
+					<li ng-repeat="location in locations"><a
+						href="{{location.location}}"
+						ng-click="setDb(location.db);setTable(location.table);handleUpdate('updateDbs');">{{location.name}}</a></li>
+				</ol>
+				<div id="alerts">
+					<button type="button" class="btn btn-default btn-lg"
+						ng-show="alerts" ng-click="removeAlerts();">Remove Alerts</button>
+					<alert ng-repeat="alert in alerts" type="{{alert.t}}"
+						close="closeAlert($index)"> <strong>Warning!</strong>
+					{{alert.as}}</alert>
+				</div>
+			</div>
 			<div id="displayContent">
 				<div id="dbContent" ng-show="showDatabases">
 					<div id="dbActions">
@@ -39,10 +48,9 @@
 							ng-click="addNewDB();setShownActionContent('')">Add
 							Database</button>
 					</div>
-					<table class="table table-hover table-condensed table-bordered">
+					<table class="table table-hover table-condensed table-bordered ">
 						<thead>
 							<tr>
-								<th>Selected</th>
 								<th>Name</th>
 							</tr>
 						</thead>
@@ -50,8 +58,7 @@
 							<tr ng-repeat="db in dbs">
 								<td><input ng-model="dbs" type="checkbox"
 									ng-change="selectDB(db)" ng-true-value="{{db}}"
-									ng-false-value="" /></td>
-								<td><a
+									ng-false-value="" /> <a
 									ng-click="setDb(db);setTable('');updateLocation();setShownContent('showDatabaseTables')">{{db.name}}</a></td>
 							</tr>
 						</tbody>
