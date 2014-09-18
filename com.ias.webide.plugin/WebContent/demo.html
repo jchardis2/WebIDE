@@ -1,2 +1,29 @@
 
 <a href="demo/angularExamples.html">Angular Examples</a>
+
+<div id="TestDiv">
+
+	<!-- 	<div ng-controller="WebIDEInput"> -->
+	<!-- 		<div web-ide-input-dir></div> -->
+	<!-- 	</div> -->
+	<div ng-controller="WebIDEInput">
+		<div my-input type='text' ng-model='test'></div>
+		<table class="table table-hover table-condensed">
+			<thead>
+				<tr>
+					<th ng-repeat="key in newColumnKeys">{{newColumn[0][key].title}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="column in newColumn">
+					<td ng-repeat="key in newColumnKeys"><div dropdown my-input
+							ng-options="option for option in column[key].uioptions.options"
+							ng-class="btn-group" type="{{column[key].type}}"
+							ng-model="column[key].val"></div></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+</div>

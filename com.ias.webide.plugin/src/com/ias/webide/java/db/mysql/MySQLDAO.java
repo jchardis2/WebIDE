@@ -2,12 +2,15 @@ package com.ias.webide.java.db.mysql;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class MySQLDAO {
@@ -202,7 +205,7 @@ public class MySQLDAO {
 			}
 		}
 	}
-	
+
 	public int deleteDB(String dbName) throws ClassNotFoundException, SQLException {
 		Connection conn = null;
 		Statement statement = null;
@@ -221,6 +224,54 @@ public class MySQLDAO {
 				conn.close();
 			}
 		}
+	}
+
+	public boolean createNewTable(JsonObject tableEl, JsonArray cols) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		String createDBSQL = getCreateTableStatement(tableEl, cols);
+		try {
+			conn = mDriver.getConnection();
+			// PreparedStatement preparedStatement =
+			// conn.prepareStatement(showColSQL);
+			// preparedStatement.setString(1, tableName);
+			// ResultSet rs = preparedStatement.executeQuery();
+			statement = conn.prepareStatement(createDBSQL);
+			statement.setString(1, tableEl.get("name").getAsString());
+			boolean rs = statement.execute();
+			return rs;
+		} catch (ClassNotFoundException e) {
+			throw e;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
+
+	private String getCreateTableStatement(JsonObject tableEl, JsonArray cols) {
+		String createDBSQL = "Create table ? {";
+		for (int i = 0; i < cols.size(); i++) {
+			createDBSQL += "? " + validateType(((JsonObject) cols.get(i)).get("type").getAsString());
+			if (i + 1 == cols.size()) {
+				createDBSQL += "}";
+			} else {
+				createDBSQL += ",";
+			}
+		}
+		return null;
+	}
+
+	String columnTypes[] = { "int", "varchar", "text" };
+
+	private String validateType(String type) {
+		for (String string : columnTypes) {
+			if (string.equals(type))
+				return string;
+		}
+		throw new InputMismatchException();
 	}
 
 	private ArrayList<String> getStringsFromRS(ResultSet rs, String name) throws SQLException {
@@ -258,4 +309,5 @@ public class MySQLDAO {
 		}
 		return false;
 	}
+
 }

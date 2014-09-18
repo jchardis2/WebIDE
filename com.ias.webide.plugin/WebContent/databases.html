@@ -71,17 +71,18 @@
 							Table</button>
 					</div>
 					<div id="addTableActions" ng-show="showAddTable">
-						<label for="tableName">Name: </label> <input type="text"
-							id="tableName" ng-model="newTable.name"> </br>
+						</br> <label for="tableName">Table Name: </label> <input type="text"
+							id="tableName" ng-model="newTable.name"> </br> </br>
 						<table class="table table-hover table-condensed">
 							<thead>
 								<tr>
-									<th ng-repeat="key in newColumnKeys">{{key}}</th>
+									<th ng-repeat="key in newColumnKeys">{{newColumn[0][key].title}}</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr ng-repeat="column in newColumn">
-									<td ng-repeat="key in newColumnKeys"><input type="text">{{column[key]}}</input></td>
+									<td ng-repeat="key in newColumnKeys"><input type="text"
+										ng-ui-element="column[key].uiElement" ng-model="column[key].val"></input></td>
 								</tr>
 							</tbody>
 						</table>
@@ -89,6 +90,8 @@
 						<button type="button" class="btn btn-default btn-lg"
 							ng-click="addNewTable();setShownActionContent('')">Add
 							Table</button>
+						<button type="button" class="btn btn-default btn-lg"
+							ng-click="addNewColumn()">Add Column</button>
 					</div>
 					<table class="table table-hover table-condensed">
 						<thead>

@@ -3,16 +3,17 @@ package com.ias.webide.server.rest;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.ws.rs.GET;
+import javax.swing.text.StyledEditorKit.BoldAction;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.ias.webide.java.db.mysql.MySQLDAO;
@@ -127,6 +128,32 @@ public class MysqlDBControllerService {
 		}
 		if (error) {
 			return Response.status(RestServiceUtil.STATUS_BAD_REQUEST).entity(outObj.toString()).build();
+		}
+
+		String out = outObj.toString();
+		return Response.status(RestServiceUtil.STATUS_OK).entity(out).build();
+	}
+
+	@POST
+	@Path("addNewTable")
+	public Response addNewTable(@QueryParam("table") String table) {
+		JsonParser parser = new JsonParser();
+		JsonObject tableEl = (JsonObject) parser.parse(table);
+		JsonArray cols = tableEl.get("cols").getAsJsonArray();
+		try {
+			boolean rs = mySQLDAO.createNewTable(tableEl, cols);
+			// JsonArray dbs = mySQLDAO.getDatabasesAsJSON();
+			// for (int i = 0; i < dbs.size(); i++) {
+			// JsonObject jsonDb = (JsonObject) dbs.get(i);
+			// JsonArray tables =
+			// mySQLDAO.getTablesAsJson(jsonDb.get("name").getAsString());
+			// }
+			// outObj.add("dbs", dbs);
+			// outObj.add("rs", new JsonPrimitive(rs));
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return getAlertMessage(e, outObj, RestServiceUtil.JSON_ERROR_PROPERTY);
 		}
 
 		String out = outObj.toString();

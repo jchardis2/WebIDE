@@ -16,18 +16,66 @@ var projects = [ {
 
 function columnTemplate() {
 	return {
-		name : '',
-		type : '',
-		length : '',
-		defaultVal : '',
-		collation : '',
-		attributes : '',
-		isNull : '',
-		autoIncr : '',
-		comments : '',
-		mime : '',
-		browserTransform : '',
-		transformOptions : ''
+		name : {
+			val : '',
+			title : 'Name',
+			type : 'text'
+		},
+		type : {
+			val : '',
+			title : 'Type',
+			type : 'text'
+		},
+		length : {
+			val : '',
+			title : 'Length/Size',
+			type : 'text'
+		},
+		defaultVal : {
+			val : '',
+			title : 'Default Value',
+			type : 'text'
+		},
+		collation : {
+			val : '',
+			title : 'Collation',
+			type : 'text'
+		},
+		attributes : {
+			val : '',
+			title : 'Attributes',
+			type : 'text'
+		},
+		isNull : {
+			val : '',
+			title : 'Null',
+			type : 'text'
+		},
+		autoIncr : {
+			val : '',
+			title : 'Auto Increment',
+			type : 'text'
+		},
+		comments : {
+			val : '',
+			title : 'Comment',
+			type : 'text'
+		},
+		mime : {
+			val : '',
+			title : 'mime',
+			type : 'text'
+		},
+		browserTransform : {
+			val : '',
+			title : 'Browser Transform',
+			type : 'text'
+		},
+		transformOptions : {
+			val : '',
+			title : 'Transform Options',
+			type : 'text'
+		}
 	}
 };
 
@@ -53,7 +101,11 @@ app.factory('sharedUpdateService', function($rootScope) {
 app.controller('PageCntl', function($scope, $location, sharedUpdateService) {
 	$scope.init = function() {
 		$scope.nav = nav;
-		$scope.url = "projects.html";
+		if ($location.path()) {
+			$scope.url = $location.path();
+		} else {
+			$scope.url = "projects.html";
+		}
 		// $scope.$location.html5Mode(false);
 		// $scope.$location.hashPrefix('!');
 	}
@@ -88,26 +140,45 @@ app.controller('ProjectCntl', function($scope) {
 	}
 });
 var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
-		sharedUpdateService) {
+		$filter, sharedUpdateService) {
+
+	$scope.$filter = $filter;
+
+	$scope.$location = $location;
 	$scope.init = function() {
 		$scope.dbs = [];
-		$scope.getDbs();
-		$scope.updateLocation();
+		$scope.getDbs($scope.initFromSearch);
 		$scope.showDatabases = true;
 
 		// Modifying db
 		$scope.newDB = {};
 		$scope.newTable = {};
 		$scope.newColumn = [ columnTemplate() ];
-		$scope.newColumnKeys = Object.keys($scope.newColumn[0])
+		$scope.newColumnKeys = Object.keys($scope.newColumn[0]);
 		$scope.selectedDbs = [];
 
 		// extras
 		$scope.alerts = [];
 	}
 
+	$scope.initFromSearch = function() {
+		if ($scope.$location.search().db) {
+			$scope.db = $scope.$filter('filter')($scope.dbs,
+					$scope.$location.search().db, true)[0];
+			if ($scope.$location.search().table) {
+				var table = $scope.$filter('filter')($scope.db.tables,
+						$scope.$location.search().table, true);
+				if (table) {
+					$scope.table = table[0];
+					$scope.getTableMetaData();
+				}
+			}
+		}
+		$scope.updateLocation();
+	};
+
 	// getters and setters
-	$scope.getDbs = function() {
+	$scope.getDbs = function(callback) {
 		var data = {};
 		data.db = $scope.db;
 		$http.post('/rest/db/getDbs', {
@@ -116,6 +187,9 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 			// this callback will be called asynchronously
 			// when the response is available
 			$scope.dbs = data.dbs;
+			if (callback) {
+				callback();
+			}
 			return data;
 		}).error(function(data, status, headers, config) {
 			$scope.alerts = data.as;
@@ -198,6 +272,29 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 		});
 	};
 
+	$scope.addNewTable = function() {
+
+		var data = {};
+		$scope.newTable.cols = $scope.newColumn;
+		data.table = $scope.newTable;
+		$http.post('/rest/db/addNewTable', data, {
+			params : data
+		}).success(function(data, status, headers, config) {
+			// this callback will be called
+			// asynchronously
+			// when the response is available
+			$scope.returnVal = data;
+			$scope.getDbs();
+			return data;
+		}).error(function(data, status, headers, config) {
+			$scope.alerts = data.as;
+		});
+	};
+
+	$scope.addNewColumn = function() {
+		$scope.newColumn[$scope.newColumn.length] = columnTemplate();
+	}
+
 	$scope.setDb = function(db) {
 		$scope.db = db
 	};
@@ -259,17 +356,22 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 			$scope.locations[1].location = '#databases.html?db='
 					+ $scope.db.name;
 			$scope.location += 'db=' + $scope.db.name;
+			$scope.$location.search('db', $scope.db.name);
 			if ($scope.table) {
 				$scope.locations[2] = {};
 				$scope.locations[2].name = $scope.table.name;
 				$scope.locations[2].db = $scope.db;
 				$scope.locations[2].table = $scope.table;
 				$scope.location += 'table=' + $scope.table.name;
+				$scope.$location.search('table', $scope.table.name);
 				$scope.setShownContent('showTableMetadata');
 			} else {
+				delete $scope.$location.search().table;
 				$scope.setShownContent('showDatabaseTables');
 			}
 		} else {
+			delete $scope.$location.search().db;
+			delete $scope.$location.search().table;
 			$scope.setShownContent('showDatabases');
 		}
 	};
@@ -311,5 +413,5 @@ var dbCntl = app.controller('DBCntl', function($scope, $http, $location,
 	};
 
 	// final calls for setup
-	$scope.init()
+	$scope.init();
 });
